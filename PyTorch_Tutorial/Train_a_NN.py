@@ -110,25 +110,28 @@ import torch.optim as optim
 optimizer = optim.SGD(net.parameters(), lr=0.01)
 
 # Set the number of epochs
-num_epochs = 10  # Define how many times to iterate over the entire dataset
+num_epochs = 20  # Define how many times to iterate over the entire dataset
 
+input = torch.randn(1, 1, 32, 32)
+target = torch.randn(10)  # a dummy target, for example
+target = target.view(1, -1)  # make it the same shape as output (view 用来更改二位张量的行数)
+criterion = nn.MSELoss()
 for epoch in range(num_epochs):
-    for batch in dataloader:  # 'dataloader' provides a batch of input and target
-        inputs, targets = batch['input'], batch['target']
-        
-        # Zero the gradient buffers
-        optimizer.zero_grad()
-        
-        # Forward pass: compute model output
-        output = net(inputs)
-        
-        # Compute the loss
-        loss = criterion(output, targets)
-        
-        # Backward pass: compute gradients
-        loss.backward()
-        
-        # Update the parameters
-        optimizer.step()
+
     
+    # Zero the gradient buffers
+    optimizer.zero_grad()
+    
+    # Forward pass: compute model output
+    output = net(input)
+    
+    # Compute the loss
+    loss = criterion(output, target)
+    
+    # Backward pass: compute gradients
+    loss.backward()
+    
+    # Update the parameters
+    optimizer.step()
+
     print(f'Epoch {epoch+1}/{num_epochs}, Loss: {loss.item()}')
