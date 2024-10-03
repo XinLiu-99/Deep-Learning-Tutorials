@@ -55,7 +55,7 @@ print(' '.join(f'{classes[labels[j]]:5s}' for j in range(batch_size)))
 
 
 ###############################################
-# Train
+# Define the model
 
 # %%
 import torch.nn as nn
@@ -91,6 +91,7 @@ criterion = nn.CrossEntropyLoss()
 optimizer = optim.SGD(net.parameters(), lr=0.001, momentum=0.9)
 
 # %%
+# train the model
 for epoch in range(2):  # loop over the dataset multiple times
 
     running_loss = 0.0
@@ -128,6 +129,7 @@ imshow(torchvision.utils.make_grid(images))
 print('GroundTruth: ', ' '.join(f'{classes[labels[j]]:5s}' for j in range(4)))
 
 # %%
+PATH = './cifar_net.pth'
 net = Net()
 net.load_state_dict(torch.load(PATH, weights_only=True))
 
@@ -143,13 +145,14 @@ print('Predicted: ', ' '.join(f'{classes[predicted[j]]:5s}'
 # %%
 correct = 0
 total = 0
-# 我们不是训练，只是计算输出就可以了，不用算梯度
+# We only calculate the output, the gradiant should be forbidden
 with torch.no_grad():
     for data in testloader:
         images, labels = data
         outputs = net(images)
         _, predicted = torch.max(outputs.data, 1)
         total += labels.size(0)
+        # the number of the correctly predicted classes
         correct += (predicted == labels).sum().item()
 
 print(f'Accuracy of the network on the 10000 test images: {100 * correct // total} %')
@@ -164,6 +167,8 @@ with torch.no_grad():
     for data in testloader:
         images, labels = data
         outputs = net(images)
+        # find the maximum in the first row/find the maximum of every column
+        # only return the index but not the value
         _, predictions = torch.max(outputs, 1)
         # collect the correct predictions for each class
         for label, prediction in zip(labels, predictions):
